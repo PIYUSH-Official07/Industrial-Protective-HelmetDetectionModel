@@ -1,16 +1,10 @@
+
 from helmet.logger import logging
 from helmet.exception import HelmetException
-import sys 
+import sys
+from helmet.pipeline.training_pipeline import TrainPipeline
 
-
-logging.info("Welcome to this Project")
-
-("Welcome to this project")
-
-try:
-    a = 2 + '3'
-    print(a)
-except Exception as e:
-    logging.info(HelmetException(e, sys))
-
-    raise HelmetException(e, sys) from e   
+ 
+train_pipeline = TrainPipeline()
+train_pipeline.run_pipeline()
+print("success")
