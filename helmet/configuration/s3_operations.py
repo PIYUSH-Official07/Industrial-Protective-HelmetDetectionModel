@@ -232,13 +232,40 @@ class S3Operation:
             raise HelmetException(e, sys) from e
 
     
-    def read_data_from_s3(self, filename: str, bucket_name: str, output_filename: str):
-        try:
-            bucket = self.get_bucket(bucket_name)
+    # def read_data_from_s3(self, filename: str, bucket_name: str, output_filename: str):
+    #     try:
+    #         bucket = self.get_bucket(bucket_name)
             
-            obj = bucket.download_file(Key=filename, Filename=output_filename)
+    #         obj = bucket.download_file(Key=filename, Filename=output_filename)
 
-            return output_filename
+    #         return output_filename
             
+    #     except Exception as e:
+    #         raise HelmetException(e, sys) from e
+    def read_data_from_s3(self, filename: str, bucket_name: str, output_filename: str) -> Union[str, None]:
+        logging.info(f"Reading data from S3: {filename} in bucket {bucket_name}")
+        try:
+        # Check if the file exists in the bucket
+            self.s3_client.head_object(Bucket=bucket_name, Key=filename)
+        
+        # Download the file
+            self.s3_client.download_file(Bucket=bucket_name, Key=filename, Filename=output_filename)
+
+        # Check if the downloaded file is empty
+            if os.path.getsize(output_filename) == 0:
+                logging.warning(f"The file {filename} in bucket {bucket_name} is empty. Continuing execution.")
+            return None
+
+            logging.info(f"Downloaded file {filename} to {output_filename}")
+            return output_filename
+
+        except ClientError as e:
+            if e.response['Error']['Code'] == '404':
+                logging.warning(f"File {filename} not found in bucket {bucket_name}. Continuing execution.")
+                return None
+            else:
+                logging.error(f"Failed to download file {filename} from bucket {bucket_name}: {e}")
+                raise HelmetException(e, sys) from e
         except Exception as e:
+            logging.error(f"Unexpected error reading file {filename} from bucket {bucket_name}: {e}")
             raise HelmetException(e, sys) from e

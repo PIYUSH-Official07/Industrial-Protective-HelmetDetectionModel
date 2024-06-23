@@ -134,24 +134,33 @@ class ModelEvaluation:
             all_losses_dict.to_csv(self.model_evaluation_config.EVALUATED_LOSS_CSV_PATH, index=False)
 
             s3_model = self.get_model_from_s3()
-            s3_model = torch.load(s3_model, map_location=torch.device(DEVICE))
+            print(s3_model)
+            if s3_model is not None:
+                s3_model = torch.load(s3_model, map_location=torch.device(DEVICE))
 
-            s3_all_losses_dict, s3_all_losses = self.evaluate(s3_model,test_loader, device=DEVICE)
+                s3_all_losses_dict, s3_all_losses = self.evaluate(s3_model,test_loader, device=DEVICE)
 
-            if s3_all_losses > all_losses:
+                if s3_all_losses > all_losses:
                 # 0.03 > 0.02
+                    is_model_accepted = True
+
+                    model_evaluation_artifact = ModelEvaluationArtifacts(
+                        is_model_accepted=is_model_accepted,
+                        all_losses=all_losses)
+                else:
+                    is_model_accepted = False
+
+                    model_evaluation_artifact = ModelEvaluationArtifacts(
+                    is_model_accepted=is_model_accepted,
+                    all_losses=s3_all_losses)
+
+            else:
                 is_model_accepted = True
 
                 model_evaluation_artifact = ModelEvaluationArtifacts(
-                    is_model_accepted=is_model_accepted,
-                    all_losses=all_losses)
-
-            else:
-                is_model_accepted = False
-
-                model_evaluation_artifact = ModelEvaluationArtifacts(
-                    is_model_accepted=is_model_accepted,
-                    all_losses=s3_all_losses)
+                is_model_accepted=is_model_accepted,
+                all_losses=all_losses)
+           
 
             logging.info("Exited the initiate_model_evaluation method of Model Evaluation class")
             return model_evaluation_artifact
