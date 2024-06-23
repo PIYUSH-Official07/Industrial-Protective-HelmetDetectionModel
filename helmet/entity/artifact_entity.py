@@ -12,3 +12,7 @@ class DataTransformationArtifacts:
     transformed_train_object: str 
     transformed_test_object: str
     number_of_classes: int
+
+@dataclass
+class ModelTrainerArtifacts:
+    trained_model_path: str

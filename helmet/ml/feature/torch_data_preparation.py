@@ -18,15 +18,21 @@ class HelmetDetection(datasets.VisionDataset):
         self.coco = COCO(os.path.join(root, split, ANNOTATIONS_COCO_JSON_FILE)) # annotation stored here
         self.ids = list(sorted(self.coco.imgs.keys()))
         self.ids = [id for id in self.ids if (len(self._load_target(id)) > 0)]
-    
-    def _load_image(self, id: int):
-        try:
-            path = self.coco.loadImgs(id)[0]['file_name']
-            image = cv2.imread(os.path.join(self.root, self.split, path))
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            return image
-        except Exception as e:
-            raise HelmetException(e, sys) from e
+
+    def _load_image(self, id):
+        path = self.coco.loadImgs(id)[0]['file_name']
+        image_path = os.path.join(self.root, self.split, path)
+        
+        if not os.path.exists(image_path):
+            raise FileNotFoundError(f"Image not found at: {image_path}")
+        
+        image = cv2.imread(image_path)
+        
+        if image is None:
+            raise ValueError(f"Failed to load image from: {image_path}")
+        
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        return image
 
     def _load_target(self, id):
         try:
