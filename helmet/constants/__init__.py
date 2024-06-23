@@ -39,10 +39,14 @@ DATA_TRANSFORMATION_TEST_SPLIT = 'test'
 # Model Training Constants 
 TRAINED_MODEL_DIR = 'TrainedModel'
 TRAINED_MODEL_NAME = 'model.pt'
-TRAINED_BATCH_SIZE = 2
+TRAINED_BATCH_SIZE = 1 # to run model eval  on cpu
 TRAINED_SHUFFLE = False
-TRAINED_NUM_WORKERS = 1
+TRAINED_NUM_WORKERS = 0 #to run model eval on cpu
 EPOCH = 1
+
+# Model evaluation constants
+MODEL_EVALUATION_ARTIFACTS_DIR = 'ModelEvaluationArtifacts'
+MODEL_EVALUATION_FILE_NAME = 'loss.csv'
 
 # Common constants
 use_cuda = torch.cuda.is_available()
