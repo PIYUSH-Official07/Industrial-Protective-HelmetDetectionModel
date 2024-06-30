@@ -52,6 +52,12 @@ MODEL_EVALUATION_FILE_NAME = 'loss.csv'
 use_cuda = torch.cuda.is_available()
 DEVICE = torch.device("cuda" if use_cuda else "cpu")
 
+APP_HOST = "0.0.0.0"
+APP_PORT = 8080
+
+# Prediction Constants
+PREDICTION_CLASSES = ['With Helmet', 'Without Helmet']
+
 # AWS CONSTANTS
 AWS_ACCESS_KEY_ID_ENV_KEY = "AWS_ACCESS_KEY_ID"
 AWS_SECRET_ACCESS_KEY_ENV_KEY = "AWS_SECRET_ACCESS_KEY"
